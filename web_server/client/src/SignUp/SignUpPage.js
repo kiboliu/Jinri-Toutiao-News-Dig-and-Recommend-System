@@ -1,9 +1,11 @@
 import React from 'react';
+
 import SignUpForm from './SignUpForm';
+import PropTypes from 'prop-types';
 
 class SignUpPage extends React.Component {
-    constructor(props) {
-        super(props);
+    constructor(props, context) {
+        super(props, context);
         this.state = {
             errors: {},
             user: {
@@ -28,6 +30,35 @@ class SignUpPage extends React.Component {
             return;
         }
         //TODO, process signup data
+        const url = 'http://' + window.location.hostname +':3000'+'/auth/signup';
+        const request = new Request(
+            url,
+            {method: 'POST', headers: {
+                    'Accept': 'application/json',
+                    'Content-Type':'application/json',
+            },
+            body: JSON.stringify({
+                email: this.state.user.email,
+                password: this.state.user.password
+            })
+        });
+        fetch(request).then(response => {
+            if (response.status === 200) {
+                this.setState({
+                    errors:{}
+                });
+                this.context.router.replace('/login');
+            } else {
+                console.log(response.text());
+                response.json().then(json => {
+                    console.log(json);
+                    const errors = json.errors ? json.errors : {};
+                    errors.summary = json.message;
+                    console.log(this.state.errors);
+                    this.setState({errors});
+                });
+            }
+        });
     }
     changeUser(event) {
         const field = event.target.name;
@@ -45,7 +76,7 @@ class SignUpPage extends React.Component {
     render() {
         return (
             <SignUpForm
-                onSubmit={(e) => this.processFor(e)}
+                onSubmit={(e) => this.processForm(e)}
                 onChange={(e) => this.changeUser(e)}
                 errors={this.state.errors}
                 user={this.state.user}
@@ -53,5 +84,8 @@ class SignUpPage extends React.Component {
         )
     }
 }
-
+// To make react-router work
+SignUpPage.contextTypes = {
+    router: PropTypes.object.isRequired
+}
 export default SignUpPage;
