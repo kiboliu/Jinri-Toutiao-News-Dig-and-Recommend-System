@@ -1,0 +1,11 @@
+jsonrpclib-pelix
+pika
+pymongo
+python-dateutil
+requests
+redis
+lxml
+scipy
+sklearn
+newspaper3k
+numpy

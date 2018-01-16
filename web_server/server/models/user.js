@@ -24,7 +24,7 @@ UserSchema.pre('save', function saveHook(next) {
             if (hashError) { return next(hashError); }
             //replace a password string with hashed value
             user.password = hash;
-            next();
+            return next();
         });
     });
 });
