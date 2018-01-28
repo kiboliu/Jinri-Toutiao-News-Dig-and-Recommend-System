@@ -6,7 +6,7 @@ import _ from 'lodash';
 class NewsPanel extends React.Component {
     constructor() {
         super();
-        this.state = {news: null};
+        this.state = {news: null, pageNum: 1, loadedAll:false};
         this.handleScroll = this.handleScroll.bind(this);
     }
     handleScroll() {
@@ -23,13 +23,21 @@ class NewsPanel extends React.Component {
         window.addEventListener('scroll', this.handleScroll);
     }
     loadMoreNews() {
-        const news_url = 'http://' + window.location.hostname + ':3000' + '/news';
+        if (this.state.loadedAll == true) {
+            return;
+        }
+        const news_url = 'http://' + window.location.hostname + ':3000' + 
+        '/news/userId' + Auth.getEmail() + '/pageNum/' + this.state.pageNum;
         const request = new Request(news_url, {method:'GET', cache:false});
         fetch(request)
             .then(res => res.json())
             .then(news => {
+                if (!news || news.length == 0) {
+                    this.setState({loadedAll:true});
+                }
                 this.setState({
                     news: this.state.news ? this.state.news.concat(news): news,
+                    pageNum: this.state.pageNum + 1,
                 });
             });
     }

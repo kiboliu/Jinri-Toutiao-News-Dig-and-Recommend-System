@@ -44,7 +44,7 @@ def handle_message(msg):
 
         # judge duplication
         tfidf = TfidfVectorizer().fit_transform(documents)
-        pairwise_sim = tfidf * tfidf
+        pairwise_sim = tfidf * tfidf.T
 
         print(pairwise_sim)
 
@@ -55,7 +55,9 @@ def handle_message(msg):
                 return
         task['publishedAt'] = parser.parse(task['publishedAt'])
         db[NEWS_TABLE_NAME].replace_one({'digest': task['digest']}, task, upsert=True)
-
+    else:
+        task['publishedAt'] = parser.parse(task['publishedAt'])
+        db[NEWS_TABLE_NAME].replace_one({'digest': task['digest']}, task, upsert=True)
 
 while True:
     if cloudAMQP_client is not None:

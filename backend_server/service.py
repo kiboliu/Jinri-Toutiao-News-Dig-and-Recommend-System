@@ -1,6 +1,7 @@
 import json
 import sys
 import os
+import operations
 from bson.json_util import dumps
 from jsonrpclib.SimpleJSONRPCServer import SimpleJSONRPCServer
 
@@ -23,12 +24,18 @@ def getOneNews():
     # dumps bson to string and then to json
     return json.loads(dumps(news))
 
+def getNewsSummariesForUser(user_id, page_num):
+    return operations.getNewsSummariesForUser(user_id, page_num)
+
+def logNewsClickForUser(user_id, news_id):
+    return operations.logNewsClickForUser(user_id, news_id)
+
 RPC_SERVER = SimpleJSONRPCServer((SERVER_HOST, SERVER_PORT))
 
 # export functions
 RPC_SERVER.register_function(add, 'add')
 RPC_SERVER.register_function(getOneNews, 'getOneNews')
-
+RPC_SERVER.register_function(getNewsSummariesForUser, 'getNewsSummariesForUser')
 print("Start RPC Server on %s:%d" % (SERVER_HOST, SERVER_PORT))
 
 RPC_SERVER.serve_forever()
